@@ -19,3 +19,4 @@ while (k < n){
 }
 
 console.log(a);
+
