@@ -3,15 +3,15 @@ let n = 1;
 let length = 1;
 
 for(let i = 0; i < a.length; i++){
-	if(a[i+1] > a[i]){
-		n++;
-		if(n > length){
-			length = n;
-		}
-	}
-	else{
-		n = 1;
-	}
+  if(a[i-1] < a[i]){
+    n++;
+    if(n > length){
+      length = n;
+    }
+  }
+  else{
+    n = 1;
+  }
 }
 
 console.log("Длина = " + length);
