@@ -2,15 +2,15 @@ const fs = require("fs");
 
 const toDo = [
   {
-    title: 'feed cat',
+    title: 'Feed Cat',
     completed: true,
   },
   {
-    title: 'buy products',
+    title: 'Buy Products',
     completed: false,
   },
   {
-    title: 'watch lecture'
+    title: 'Watch Lecture',
     completed: false,
   }
 ]
