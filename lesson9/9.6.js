@@ -1,19 +1,12 @@
 const fs = require("fs");
 const readlineSync = require("readline-sync");
 
-let number = readlineSync.question('Какое дело выполнено/невыполнено? Введите номер:\n');
+let number = parseInt(readlineSync.question('Какое дело выполнено/невыполнено? Введите номер:\n'));
 let toDo = JSON.parse(fs.readFileSync('toDo.json'));
 const error = 'Такого номер нет!';
-let flag = false;
 let str;
 
-for(let i = 0; i < toDo.length; i++){
-  if(i === number-1){
-    flag = true;
-  }
-}
-
-if(flag){
+if(number <= toDo.length && number > 0){
   toDo[number-1].completed = !toDo[number-1].completed;
   if(toDo[number-1].completed){
     str = '[x]';

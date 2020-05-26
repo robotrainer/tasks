@@ -4,26 +4,21 @@ const readlineSync = require("readline-sync");
 
 let search = readlineSync.question('Поиск:\n');
 let toDo = JSON.parse(fs.readFileSync('toDo.json'));
-let searchtoDo = JSON.parse(fs.readFileSync('toDo.json'));
 let l = search.length;
-let flag = true;
-let n = -1;
+let flag = false;
 
 search = search.toLowerCase();
 
 
-for(let i = 0; i < searchtoDo.length; i++){
-  let Do = searchtoDo[i];
-  Do.title = Do.title.toLowerCase();
-  if(Do.title.indexOf(search) !== -1){
-    n = Do.title.indexOf(search);
-    console.log(toDo[i].title.slice(0, n) + chalk.red(toDo[i].title.slice(n, n+l)) + toDo[i].title.slice(n+l));
-  }
-  else{
-    flag = false;
+for(let Do of toDo){
+  let title = Do.title.toLowerCase();
+  if(title.indexOf(search) !== -1){
+    let n = title.indexOf(search);
+    console.log(Do.title.slice(0, n) + chalk.red(Do.title.slice(n, n+l)) + Do.title.slice(n+l));
+    flag = true;
   }
 }
 
-if(!flag && n === -1){
+if(!flag){
   console.log('Соответсвующих дел нет!')
 }
