@@ -1,0 +1,258 @@
+const fs = require("fs");
+const readlineSync = require("readline-sync");
+const chalk = require("chalk");
+
+let todos = [
+  {
+    title: 'Feed Cat',
+    completed: true,
+  },
+  {
+    title: 'Buy Products',
+    completed: false,
+  },
+  {
+    title: 'Watch Lecture',
+    completed: false,
+  }
+];
+
+function initTodos(){
+  if(!fs.existsSync('todo.json')){
+    saveTodos(todos);
+  }
+}
+
+function saveTodos(todos){
+  fs.writeFileSync('todo.json', JSON.stringify(todos));
+}
+
+
+function loadTodos(){
+  return todos = JSON.parse(fs.readFileSync('todo.json'));
+}
+
+function renderTodo(num, todo, highlight){
+  let str;
+  if(todo.completed){
+    str = '[' + chalk.green('x') + '] ';
+  }
+  else{
+    str = '[ ] ';
+  }
+  if(highlight){
+    let l = highlight.length;
+    let n = todo.title.toLowerCase().indexOf(highlight);
+    return console.log(str + num + '. ' + todo.title.slice(0, n) + chalk.red(todo.title.slice(n, n+l)) + todo.title.slice(n+l));
+  }
+  else{
+    return console.log(str + num + '. '+ todo.title);
+  }
+}
+
+function listTodos(type){
+  loadTodos();
+  if(type === 'all'){
+    for(let i = 0; i < todos.length; i++){
+      renderTodo(i+1, todos[i]);
+    }
+  }
+  else if(type === 'uncompleted'){
+    for(let i = 0; i < todos.length; i++){
+      if(!todos[i].completed){
+        renderTodo(i+1, todos[i]);
+      }
+    }
+  }
+  else if(type === 'completed'){
+    for(let i = 0; i < todos.length; i++){
+      if(todos[i].completed){
+        renderTodo(i+1, todos[i]);
+      }
+    }
+  }
+}
+
+function addTodo(newtitle){
+  loadTodos();
+  todos.push({
+    title: newtitle,
+    completed: false,
+  })
+  saveTodos(todos);
+  return console.log(chalk.green('Новое дело добавлено!'));
+}
+
+function toggleTodo(num){
+  loadTodos();
+  if(num <= todos.length && num > 0){
+    todos[num-1].completed = !todos[num-1].completed;
+    saveTodos(todos);
+    console.log(chalk.green('Статус дела изменён!'));
+    renderTodo(num, todos[num-1]);
+  }
+  else{
+    nonum();
+  }
+}
+
+function removeTodo(num){
+  loadTodos();
+  const error = 'Такого номера нет!';
+  if(num <= todos.length && num > 0){
+    todos.splice(num-1, 1);
+    saveTodos(todos);
+    console.log(chalk.green('Дело ' + num + ' удалено!'));
+  }
+  else{
+    nonum();
+  }
+}
+
+function nonum(){
+  return console.log(chalk.red('Такого номер нет!'));
+}
+
+function clearTodos(){
+  loadTodos();
+  let n = 0;
+  for(let i = 0; i < todos.length; i++){
+    let Do = todos[i];
+    if(Do.completed){
+      todos.splice(todos.indexOf(Do), 1);
+      n++;
+      i = -1;
+    }
+  }
+  saveTodos(todos);
+  console.log(chalk.green('{'+n+'} дел удалено!'));
+}
+
+function searchTodos(str){
+  loadTodos();
+  let flag = false;
+  str = str.toLowerCase();
+  for(let i = 0; i < todos.length; i++){
+    let Do = todos[i];
+    let title = Do.title.toLowerCase();
+    if(title.indexOf(str) !== -1){
+      renderTodo(i+1, Do, str);
+      flag = true;
+    }
+  }
+  if(!flag){
+    console.log(chalk.red('Соответсвующих дел нет!'));
+  }
+}
+
+function sortTodos(){
+  loadTodos();
+
+  function compareTitles(a, b){
+    if(a.title > b.title){
+      return 1;
+    }
+    if(a.title < b.title){
+      return -1;
+    }
+    return 0;
+  }
+
+  function compareCompleted(a, b){
+    if(a.completed > b.completed){
+      return 1;
+    }
+    if (a. completed < b.completed){
+      return -1;
+    }
+    return 0;
+  }
+
+  todos.sort(compareTitles);
+  todos.sort(compareCompleted);
+
+  saveTodos(todos);
+}
+
+function wrong(){
+  return console.log(chalk.red('Неверная команда!'));
+}
+
+function replaceCommand(strcommand, str, func){
+  let com = strcommand.split(' ');
+  if(com[0] === str){
+    let newtitle = command.replace(str + ' ', '');
+    func(newtitle);
+  }
+  else{
+    wrong();
+  }
+}
+
+function help(){
+  let help = 
+  chalk.green('Список всех доступных команды:\n') + 
+  chalk.green('list') + ' - выводит список невыполненных дел\n' +
+  chalk.green('list-all') + ' - выводит список всех дел\n' +
+  chalk.green('list-completed') + ' - выводит список выполненных дел\n' + 
+  chalk.green('add') + chalk.magenta(' новое дело') + ' - добавляет выше новое дело\n' + 
+  chalk.green('toggle') + chalk.magenta(' x') + ' - меняет статус дела,' + chalk.magenta(' x') + ' - номер дела\n' +
+  chalk.green('remove') + chalk.magenta(' x') + ' - удаляет дело,' + chalk.magenta(' x') + ' - номер дела\n' + 
+  chalk.green('clear') + ' - удаляет все выполненные дела\n' + 
+  chalk.green('sort') + ' - сортирует список дел\n' + 
+  chalk.green('serch') + chalk.magenta(' x') + ' - поиск дел по соответсвию,' + chalk.magenta(' x') + ' - искомая строка\n' +
+  chalk.green('exit') + ' - выход из программы'
+  return console.log(help);
+}
+
+
+let command = '';
+
+initTodos();
+console.log(chalk.blue('Приветствую! Список дел запущен.')+
+  '\nЧтобы узнать все доступные команды, введите команду ' + chalk.green('help'));
+while(command !== 'exit'){
+  command = readlineSync.question(chalk.yellow('Введите команду:\n'));
+  if(command === 'help'){
+    help();
+  }
+  else if(command === 'list'){
+    console.log(chalk.green('Список невыполненных дел:'));
+    listTodos('uncompleted');
+  }
+  else if(command === 'list-all'){
+    console.log(chalk.green('Список всех дел:'));
+    listTodos('all');
+  }
+  else if(command === 'list-completed'){
+    console.log(chalk.green('Список выполненных дел:'));
+    listTodos('completed');
+  }
+  else if(command.indexOf('add ') !== -1){
+    replaceCommand(command, 'add', addTodo);
+  }
+  else if(command.indexOf('toggle ') !== -1){
+    replaceCommand(command, 'toggle', toggleTodo);
+  }
+  else if(command.indexOf('remove ') !== -1){
+    replaceCommand(command, 'remove', removeTodo);
+  }
+  else if(command === 'clear'){
+    clearTodos();
+  }
+  else if(command.indexOf('search') !== -1 && command !== 'search' && command !== 'search '){
+    console.log(chalk.green('Поиск:'));
+    searchTodos(command.replace('search ', ''));
+  }
+  else if(command === 'sort'){
+    sortTodos();
+    console.log(chalk.green('Список отсортирован:'));
+    listTodos('all');
+  }
+  else if(command !== 'exit'){
+    wrong();
+  }
+  else{
+    console.log(chalk.blue('Список дел закрыт. До свидания!'));
+  }
+}
