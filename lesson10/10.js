@@ -2,23 +2,23 @@ const fs = require("fs");
 const readlineSync = require("readline-sync");
 const chalk = require("chalk");
 
-let todos = [
-  {
-    title: 'Feed Cat',
-    completed: true,
-  },
-  {
-    title: 'Buy Products',
-    completed: false,
-  },
-  {
-    title: 'Watch Lecture',
-    completed: false,
-  }
-];
-
 function initTodos(){
   if(!fs.existsSync('todo.json')){
+    let todos = [
+      {
+        title: 'Feed Cat',
+        completed: true,
+      },
+      {
+        title: 'Buy Products',
+        completed: false,
+      },
+      {
+        title: 'Watch Lecture',
+        completed: false,
+      },
+    ];
+
     saveTodos(todos);
   }
 }
@@ -52,20 +52,16 @@ function renderTodo(num, todo, highlight){
 
 function listTodos(type){
   loadTodos();
-  if(type === 'all'){
-    for(let i = 0; i < todos.length; i++){
+  for(let i = 0; i < todos.length; i++){
+    if(type === 'all'){
       renderTodo(i+1, todos[i]);
     }
-  }
-  else if(type === 'uncompleted'){
-    for(let i = 0; i < todos.length; i++){
+    else if(type === 'uncompleted'){
       if(!todos[i].completed){
         renderTodo(i+1, todos[i]);
       }
     }
-  }
-  else if(type === 'completed'){
-    for(let i = 0; i < todos.length; i++){
+    else if(type === 'completed'){
       if(todos[i].completed){
         renderTodo(i+1, todos[i]);
       }
@@ -115,32 +111,33 @@ function nonum(){
 
 function clearTodos(){
   loadTodos();
-  let n = 0;
-  for(let i = 0; i < todos.length; i++){
-    let Do = todos[i];
-    if(Do.completed){
-      todos.splice(todos.indexOf(Do), 1);
+  let cleartodos = [];
+  n = 0;
+  for(let Do of todos){
+    if(!Do.completed){
+      cleartodos.push(Do);
+    }
+    else{
       n++;
-      i = -1;
     }
   }
-  saveTodos(todos);
+  saveTodos(cleartodos);
   console.log(chalk.green('{'+n+'} дел удалено!'));
 }
 
 function searchTodos(str){
   loadTodos();
-  let flag = false;
+  let doFound = false;
   str = str.toLowerCase();
   for(let i = 0; i < todos.length; i++){
     let Do = todos[i];
     let title = Do.title.toLowerCase();
     if(title.indexOf(str) !== -1){
       renderTodo(i+1, Do, str);
-      flag = true;
+      doFound = true;
     }
   }
-  if(!flag){
+  if(!doFound){
     console.log(chalk.red('Соответсвующих дел нет!'));
   }
 }
@@ -148,7 +145,13 @@ function searchTodos(str){
 function sortTodos(){
   loadTodos();
 
-  function compareTitles(a, b){
+  function compare(a, b){
+    if(a.completed > b.completed){
+      return 1;
+    }
+    if (a.completed < b.completed){
+      return -1;
+    }
     if(a.title > b.title){
       return 1;
     }
@@ -158,35 +161,12 @@ function sortTodos(){
     return 0;
   }
 
-  function compareCompleted(a, b){
-    if(a.completed > b.completed){
-      return 1;
-    }
-    if (a. completed < b.completed){
-      return -1;
-    }
-    return 0;
-  }
-
-  todos.sort(compareTitles);
-  todos.sort(compareCompleted);
-
+  todos.sort(compare);
   saveTodos(todos);
 }
 
 function wrong(){
   return console.log(chalk.red('Неверная команда!'));
-}
-
-function replaceCommand(strcommand, str, func){
-  let com = strcommand.split(' ');
-  if(com[0] === str){
-    let newtitle = command.replace(str + ' ', '');
-    func(newtitle);
-  }
-  else{
-    wrong();
-  }
 }
 
 function help(){
@@ -205,14 +185,16 @@ function help(){
   return console.log(help);
 }
 
-
-let command = '';
-
 initTodos();
+
 console.log(chalk.blue('Приветствую! Список дел запущен.')+
   '\nЧтобы узнать все доступные команды, введите команду ' + chalk.green('help'));
-while(command !== 'exit'){
-  command = readlineSync.question(chalk.yellow('Введите команду:\n'));
+
+while(true){
+  let enter = readlineSync.question(chalk.yellow('Введите команду:\n'));
+  let words = enter.split(' ');
+  let command = words[0];
+
   if(command === 'help'){
     help();
   }
@@ -228,19 +210,22 @@ while(command !== 'exit'){
     console.log(chalk.green('Список выполненных дел:'));
     listTodos('completed');
   }
-  else if(command.indexOf('add ') !== -1){
-    replaceCommand(command, 'add', addTodo);
+  else if(command === 'add'){
+    let title = words.slice(1).join(' ');
+    addTodo(title);
   }
-  else if(command.indexOf('toggle ') !== -1){
-    replaceCommand(command, 'toggle', toggleTodo);
+  else if(command === 'toggle'){
+    let num = parseInt(words[1]);
+    toggleTodo(num);
   }
-  else if(command.indexOf('remove ') !== -1){
-    replaceCommand(command, 'remove', removeTodo);
+  else if(command === 'remove'){
+    let num = parseInt(words[1]);
+    removeTodo(num);
   }
   else if(command === 'clear'){
     clearTodos();
   }
-  else if(command.indexOf('search') !== -1 && command !== 'search' && command !== 'search '){
+  else if(command === 'search'){
     console.log(chalk.green('Поиск:'));
     searchTodos(command.replace('search ', ''));
   }
@@ -249,10 +234,11 @@ while(command !== 'exit'){
     console.log(chalk.green('Список отсортирован:'));
     listTodos('all');
   }
-  else if(command !== 'exit'){
-    wrong();
+  else if(command === 'exit'){
+    console.log(chalk.blue('Список дел закрыт. До свидания!'));
+    break;
   }
   else{
-    console.log(chalk.blue('Список дел закрыт. До свидания!'));
+    wrong();
   }
 }
