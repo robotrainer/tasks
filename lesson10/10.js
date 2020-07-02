@@ -227,7 +227,7 @@ while(true){
   }
   else if(command === 'search'){
     console.log(chalk.green('Поиск:'));
-    searchTodos(command.replace('search ', ''));
+    searchTodos(words[1]);
   }
   else if(command === 'sort'){
     sortTodos();
