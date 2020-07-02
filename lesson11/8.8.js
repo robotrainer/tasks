@@ -2,7 +2,7 @@ const readlineSync = require("readline-sync");
 
 let str = readlineSync.question('Введите слово:\n');
 
-const re = /(^\w)|\s(\w)/g;
+const re = /\b\w/g;
 
 function replacer(match, offset, string){
   return match.toUpperCase();

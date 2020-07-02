@@ -29,35 +29,28 @@ function saveTodos(todos){
 
 
 function loadTodos(){
-  return todos = JSON.parse(fs.readFileSync('todo.json'));
+  return JSON.parse(fs.readFileSync('todo.json'));
 }
 
-function renderTodo(num, todo, highlight){
+function renderTodo(num, todo){
   let str = todo.completed ? '[' + chalk.green('x') + '] ':
-  '[ ] ';
-  if(highlight){
-    let l = highlight.length;
-    let n = todo.title.toLowerCase().indexOf(highlight);
-    return console.log(str + num + '. ' + todo.title.slice(0, n) + chalk.red(todo.title.slice(n, n+l)) + todo.title.slice(n+l));
-  }
-  else{
-    return console.log(str + num + '. '+ todo.title);
-  }
+                             '[ ] ';
+  return str + num + '. '+ todo.title;
 }
 
 function listTodos(type){
-  loadTodos();
+  let todos = loadTodos();
   todos
       .map((item, index) => ({
         todo: item,
         index: index,
       }))
       .filter((x) => type === 'all' || (type === 'completed' && x.todo.completed) || (type === 'uncompleted' && !x.todo.completed))
-      .forEach((y) => renderTodo(y.index + 1, y.todo));
+      .forEach((y) => console.log(renderTodo(y.index + 1, y.todo)));
 }
 
 function addTodo(newtitle){
-  loadTodos();
+  let todos = loadTodos();
   todos.push({
     title: newtitle,
     completed: false,
@@ -67,12 +60,12 @@ function addTodo(newtitle){
 }
 
 function toggleTodo(num){
-  loadTodos();
+  let todos = loadTodos();
   if(num <= todos.length && num > 0){
     todos[num-1].completed = !todos[num-1].completed;
     saveTodos(todos);
     console.log(chalk.green('Статус дела изменён!'));
-    renderTodo(num, todos[num-1]);
+    console.log(renderTodo(num, todos[num-1]));
   }
   else{
     nonum();
@@ -80,7 +73,7 @@ function toggleTodo(num){
 }
 
 function removeTodo(num){
-  loadTodos();
+  let todos = loadTodos();
   const error = 'Такого номера нет!';
   if(num <= todos.length && num > 0){
     todos.splice(num-1, 1);
@@ -97,7 +90,7 @@ function nonum(){
 }
 
 function clearTodos(){
-  loadTodos();
+  let todos = loadTodos();
   let firstLength = todos.length;
   todos = todos.filter((x) => !x.completed);
   saveTodos(todos);
@@ -105,24 +98,26 @@ function clearTodos(){
 }
 
 function searchTodos(str){
-  loadTodos();
-  let doFound = false;
-  str = str.toLowerCase();
-  for(let i = 0; i < todos.length; i++){
-    let Do = todos[i];
-    let title = Do.title.toLowerCase();
-    if(title.indexOf(str) !== -1){
-      renderTodo(i+1, Do, str);
-      doFound = true;
-    }
-  }
-  if(!doFound){
-    console.log(chalk.red('Соответсвующих дел нет!'));
-  }
+  let todos = loadTodos();
+  let reLower = new RegExp(str.toLowerCase(), 'g');
+  let reUpper = new RegExp(str.toUpperCase(), 'g');
+  todos
+      .map((item, index) => ({
+        todo: item,
+        index: index,
+      }))
+      .filter((x) => 
+        x.todo.title.includes(str.toLowerCase()) || x.todo.title.includes(str.toUpperCase())
+      )
+      .forEach((y) => {
+        y.todo.title = y.todo.title.replace(reLower, chalk.red(str.toLowerCase()))
+        y.todo.title = y.todo.title.replace(reUpper, chalk.red(str.toUpperCase()))
+        console.log(renderTodo(y.index + 1, y.todo))
+       });
 }
 
 function sortTodos(){
-  loadTodos();
+  let todos = loadTodos();
 
   function compare(a, b){
     if(a.completed > b.completed){
@@ -159,7 +154,7 @@ function help(){
   chalk.green('remove') + chalk.magenta(' x') + ' - удаляет дело,' + chalk.magenta(' x') + ' - номер дела\n' + 
   chalk.green('clear') + ' - удаляет все выполненные дела\n' + 
   chalk.green('sort') + ' - сортирует список дел\n' + 
-  chalk.green('serch') + chalk.magenta(' x') + ' - поиск дел по соответсвию,' + chalk.magenta(' x') + ' - искомая строка\n' +
+  chalk.green('search') + chalk.magenta(' x') + ' - поиск дел по соответсвию,' + chalk.magenta(' x') + ' - искомая строка\n' +
   chalk.green('exit') + ' - выход из программы'
   return console.log(help);
 }
@@ -206,7 +201,7 @@ while(true){
   }
   else if(command === 'search'){
     console.log(chalk.green('Поиск:'));
-    searchTodos(command.replace('search ', ''));
+    searchTodos(words[1]);
   }
   else if(command === 'sort'){
     sortTodos();
