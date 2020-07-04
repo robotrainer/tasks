@@ -32,10 +32,16 @@ function loadTodos(){
   return JSON.parse(fs.readFileSync('todo.json'));
 }
 
-function renderTodo(num, todo){
+function renderTodo(num, todo, highlight){
   let str = todo.completed ? '[' + chalk.green('x') + '] ':
                              '[ ] ';
-  return str + num + '. '+ todo.title;
+  if(highlight){
+    let re = new RegExp(highlight, 'gi');
+    return str + num + '. ' + todo.title.replace(re, (match) => chalk.red(match));
+  }
+  else{
+    return str + num + '. '+ todo.title;
+  }
 }
 
 function listTodos(type){
@@ -99,20 +105,17 @@ function clearTodos(){
 
 function searchTodos(str){
   let todos = loadTodos();
-  let reLower = new RegExp(str.toLowerCase(), 'g');
-  let reUpper = new RegExp(str.toUpperCase(), 'g');
+  let re = new RegExp(str, 'gi');
   todos
       .map((item, index) => ({
         todo: item,
         index: index,
       }))
-      .filter((x) => 
-        x.todo.title.includes(str.toLowerCase()) || x.todo.title.includes(str.toUpperCase())
+      .filter((x) =>
+        re.test(x.todo.title)
       )
       .forEach((y) => {
-        y.todo.title = y.todo.title.replace(reLower, chalk.red(str.toLowerCase()))
-        y.todo.title = y.todo.title.replace(reUpper, chalk.red(str.toUpperCase()))
-        console.log(renderTodo(y.index + 1, y.todo))
+        console.log(renderTodo(y.index + 1, y.todo, str))
        });
 }
 
