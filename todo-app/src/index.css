@@ -1,0 +1,28 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: auto;
+  max-width: 38rem;
+  padding: 2rem;
+}
+
+/*.list {
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+  background: rgb(255, 200, 180);
+}
+
+.item {
+  margin-bottom: 5px;
+  color: rgb(50, 0, 50);
+}
+
+.item:last-child {
+  margin-bottom: 0;
+}*/
+
+.remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
