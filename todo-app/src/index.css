@@ -5,11 +5,38 @@ body {
   padding: 2rem;
 }
 
-/*.list {
+input[type="search"] { 
+  /*position: relative;*/
+  width: 517px;
+  border-radius: 5px;
+  border: 1px solid gray;
+}
+
+input [type="addTodo"]{
+  /*position: absolute;*/
+  left: 30px;
+}
+
+input[placeholder="Добавить дело"]{
+  position: relative;
+  left: 5px;
+  width: 480px;
+  border-radius: 5px;
+  border: 1px solid gray;
+}
+
+.toolbar input[type="checkbox"]{
+  position: relative;
+  left: 5px;
+}
+
+.list {
   border: 1px solid gray;
   border-radius: 5px;
   padding: 5px;
-  background: rgb(255, 200, 180);
+  /*background: rgb(255, 200, 180);*/
+  margin: 5px;
+  margin-left: 0px;
 }
 
 .item {
@@ -19,10 +46,26 @@ body {
 
 .item:last-child {
   margin-bottom: 0;
-}*/
+}
 
 .remove {
+  position: absolute;
+  right: 50px;
   border: none;
   background: transparent;
   cursor: pointer;
+}
+
+.listTodo {
+  position: absolute;
+}
+
+.filter {
+  position: absolute;
+  left: 150px;
+}
+
+.clear {
+  position: absolute;
+  left: 430px;
 }
