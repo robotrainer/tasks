@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Купить продукты",
+    "completed": false
+  },
+  {
+    "title": "Посмотреть лекцию",
+    "completed": false
+  },
+  {
+    "title": "Сделать ДЗ",
+    "completed": false
+  }
+]
