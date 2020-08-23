@@ -8,7 +8,28 @@ body {
 
 .headTodo {
   text-align: center;
-  font-size: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  /* margin-bottom: 20px; */
+}
+
+.user {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.logout {
+  border: 1px solid gray;
+  border-radius: 5px;
+  background-color: rgb(250, 170, 50, 0.02);
+  padding: 3px;
+  cursor: pointer;
+  margin-top: -3px;
+}
+
+.logout:hover {
+  transform: scale(1.1);
 }
 
 .searchbar input[type="search"] {
@@ -17,7 +38,7 @@ body {
   border-radius: 5px;
   padding: 3px;
   opacity: 0.7;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .toolbar {
@@ -30,8 +51,9 @@ body {
   opacity: 0.7;
 }
 
-.toolbar input[type="checkbox"]{
+.check-all{
   flex: 0.1;
+  cursor: pointer;
 }
 
 .toolbar input[type="addTodo"]{ 
@@ -40,7 +62,7 @@ body {
   border-radius: 5px;
   padding: 3px;
   margin-left: 5px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .list {
@@ -50,15 +72,23 @@ body {
 
 .list div {
   border-bottom: 1px solid gray;
-  margin-top: 5px;  
+  margin-top: 5px;
 }
 
 .item {
   display: flex;
+  font-size: 16px;
 }
 
 .item label{
   flex: 2;
+  cursor: pointer;
+  /*margin-right: 200px;*/
+}
+
+.item label:hover {
+  /*font-size: 15px;*/
+  font-weight: bold;
 }
 
 .item button {
@@ -67,6 +97,11 @@ body {
   border: 1px solid gray;
   border-radius: 5px;
   transform: scale(0.9);
+  cursor: pointer;
+}
+
+.item button:hover {
+  transform: scale(1);
 }
 
 .item input {
@@ -89,12 +124,21 @@ body {
 
 .filter{
   flex: 2.1;
-  font-size: 14px;
+  font-size: 16px;
+}
+
+.filter label:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.filter input[type="radio"]{
+  cursor: pointer;
 }
 
 .listTodo {
   flex: 1;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .clear button{
@@ -102,4 +146,13 @@ body {
   border-radius: 5px;
   background-color: rgb(250, 170, 50, 0.02);
   padding: 3px;
+  cursor: pointer;
+}
+
+.clear button:hover {
+  transform: scale(1.1);
+}
+
+.checkbox {
+  cursor: pointer;
 }

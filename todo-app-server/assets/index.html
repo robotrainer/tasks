@@ -10,31 +10,33 @@
   <body>
     <div class="headTodo">Список дел</div>
 
+    <div class="user">
+      {{log}}
+      <form action="/logout/" method="POST"><input class="logout" type="submit" value="Выход"></form>
+    </div>
+
     <div class="searchbar">
-      <input type="search" placeholder="Поиск" />
+      <input type="search" class="search" placeholder="Поиск" />
     </div>
 
     <div class = "toolbar">
-      <input type="checkbox"/>
-      <input type="addTodo" placeholder="Добавить дело"/>
+      <input class="check-all" type="checkbox"/>
+      <input type="addTodo" class="addTodo" placeholder="Добавить дело"/>
     </div>
 
-    <div class="list">
-      <!-- <div class="item"><label><input type="checkbox"/></label><button class="remove">❌</button></div> -->
-<!--       <div class="item"><label><input type="checkbox"/>2. Покормить кота</label><button class="remove">❌</button></div>
-      <div class="item"><label><input type="checkbox"/>3. Поиграть в компьютер</label><button class="remove">❌</button></div> -->
-    </div>
+    <div class="list"></div>
 
     <div class="footer">
       <div class="listTodo">2 дела осталось</div>
       <div class="filter">
-        <label><input type="radio" name="filterRadio" />Все</label>
-        <label><input type="radio" name="filterRadio" />Активные</label>
-        <label><input type="radio" name="filterRadio" />Завершённые</label>
+        <label><input class="fil" type="radio" name="filterRadio" value="all" checked />Все</label>
+        <label><input class="fil" type="radio" name="filterRadio" value="uncompleted" />Активные</label>
+        <label><input class="fil" type="radio" name="filterRadio" value="completed" />Завершённые</label>
       </div>
-      <div class="clear"><button>Удалить завершённые</button></div>
+      <div class="clear"><button class="buttonClear">Удалить завершённые</button></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.19/lodash.min.js"></script>
     <script src="index.js"></script>
 
   </body>

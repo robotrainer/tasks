@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/robotrainer/tasks#readme",
   "dependencies": {
-    "@types/node": "^13.13.5",
+    "@types/node": "^13.13.14",
     "chalk": "^4.0.0",
+    "lodash": "^4.17.15",
     "readline-sync": "^1.4.10"
   }
 }
