@@ -1,6 +1,3 @@
-// const fs = require("fs");
-// const path = require("path");
-
 const ObjectId = require('mongodb').ObjectId;
 
 /**
@@ -10,53 +7,51 @@ const ObjectId = require('mongodb').ObjectId;
 
 module.exports = function (app, db) {
     app.get("/get-todos", async (req, res) => {
-        const data = await loadData(req.session.user._id);
+        const todos = await loadData(req.session.user._id);
+        const todosList = await todos.find({userID: ObjectId(req.session.user._id)}).toArray();
         res.setHeader("Content-Type", "application/json");
-        res.send(data);
+        res.send(todosList);
     });
 
     app.post('/add', async (req, res) => {
-        const data = await loadData(req.session.user._id);
-        data.push(req.body);
-        await saveData(req.session.user._id, data);
+        await loadData(req.session.user._id);
+        const list = req.body;
+        await saveData(req.session.user._id, list.title, list.completed);
         res.send('ok');
     });
 
     app.post('/remove', async (req, res) => {
-        let data = await loadData(req.session.user._id);
-        const a = req.body;
-        console.log(a);
-        for (let i = 0; i < a.length; i++) {
-            data.splice(a[i], 1, '');
+        const data = await loadData(req.session.user._id);
+        const todoid = req.body;
+        for (let i = 0; i < todoid.length; i++) {
+            await data.deleteOne({_id: ObjectId(todoid[i])});
         }
-        data = data.filter((x) => x !== '');
-        await saveData(req.session.user._id, data);
         res.send('ok');
     });
 
     app.post('/toggle', async (req, res) => {
         const data = await loadData(req.session.user._id);
-        const i = req.body.number;
-        data[i].completed = !data[i].completed;
-        await saveData(req.session.user._id, data);
+        const idToggleTodo = req.body.number;
+        const todo = await data.findOne({_id: ObjectId(idToggleTodo)});
+        await data.updateOne({_id: ObjectId(idToggleTodo)}, {$set: {completed: !todo.completed}});
         res.send('ok');
     });
 
-    app.post('/clear', async (req, res) => {
-        let data = await loadData(req.session.user._id);
-        data = data.filter((x) => !x.completed);
-        await saveData(req.session.user._id, data);
-        res.send('ok');
-    });
+    // app.post('/clear', async (req, res) => {
+    //     let data = await loadData(req.session.user._id);
+    //     data = data.filter((x) => !x.completed);
+    //     await saveData(req.session.user._id, data);
+    //     res.send('ok');
+    // });
 
     async function loadData(id) {
-        const data = db.collection('data');
-        return await data.findOne({users: ObjectId(id)});
+        const todos = db.collection('data');
+        return todos;
     }
     
-    async function saveData(id, userData) {
-        const data = db.collection('data');
-        await data.updateOne({userID: ObjectId(id)}, {$set: userData});
+    async function saveData(id, title, completed) {
+        const todos = db.collection('data');
+        await todos.insertOne({userID: ObjectId(id), title: title, completed: completed});
     }
 };
 

@@ -22,7 +22,7 @@ async function init() {
       });
       data.push({ title: add, completed: false });
       e.target.value = '';
-      render();
+      init();
     }
   });
 
@@ -30,7 +30,7 @@ async function init() {
     let clearArray = [];
     for (let i = 0; i < data.length; i++) {
       if (data[i].completed) {
-        clearArray.push(i);
+        clearArray.push(data[i]._id);
       }
     }
     fetch('/remove', {
@@ -54,10 +54,10 @@ async function init() {
   });
 }
 
-function render() {
-  const filter = document.querySelector('.fil:checked');
-  const str = document.querySelector('.search').value;
-  const re = new RegExp(_.escapeRegExp(str), 'gi');
+async function render() {
+  const filter = await document.querySelector('.fil:checked');
+  const str = await document.querySelector('.search').value;
+  const re = new RegExp(_.escapeRegExp(str), 'im');
   document.querySelector('.list').innerHTML = data
     .map((item, index) => ({
       todo: item,
@@ -82,14 +82,14 @@ function render() {
   for (let i = 0; i < removeTodo.length; i++) {
     const remove = removeTodo[i];
     let removeIndex = [];
-    removeIndex.push(remove.value);
+    removeIndex.push(data[i]._id);
     remove.addEventListener('click', () => {
       fetch('/remove', {
         body: JSON.stringify(removeIndex),
         headers: { "Content-Type": "application/json;charset=utf-8", },
         method: 'POST',
       });
-      data.splice(removeIndex, 1);
+      data.splice(remove.value, 1);
       render();
     });
   }
@@ -100,7 +100,7 @@ function render() {
     const toggleIndex = toggle.value;
     toggle.addEventListener('change', () => {
       fetch('/toggle', {
-        body: JSON.stringify({ number: toggleIndex }),
+        body: JSON.stringify({number: data[i]._id}),
         headers: { "Content-Type": "application/json;charset=utf-8", },
         method: 'POST',
       });

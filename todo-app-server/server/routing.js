@@ -52,7 +52,6 @@ module.exports = function (app, db) {
 
         const users = db.collection('users');
 
-
         const user = await users.findOne({login: login, password: password});
 
         if (user) {
@@ -121,8 +120,8 @@ module.exports = function (app, db) {
             const result = await users.insertOne({login: login, password: password});
             const user = result.ops[0];
 
-            const data = db.collection('data');
-            data.insertMany({title: "", completed: false, userID: user._id}); //как сделать правильно?
+            db.collection('data');
+            // data.insertOne({userID: user._id}); //как сделать правильно?
             
             req.session.user = user;
             

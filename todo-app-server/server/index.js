@@ -4,7 +4,6 @@ const bodyParser = require("body-parser");
 const routing = require('./routing.js');
 const api = require('./api.js');
 const session = require("express-session");
-// const { resolveCname } = require("dns");
 
 const MongoClient = require("mongodb").MongoClient;
 
