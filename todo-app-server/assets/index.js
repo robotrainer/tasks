@@ -78,6 +78,10 @@ async function render() {
     })
     .join('');
 
+  document.querySelector('.listTodo').innerHTML = '<div class="numTodo">' +
+    data.filter((x) => !x.completed).length + ' дел осталось</div>';
+
+
   const removeTodo = document.querySelectorAll('.remove');
   for (let i = 0; i < removeTodo.length; i++) {
     const remove = removeTodo[i];
@@ -100,7 +104,7 @@ async function render() {
     const toggleIndex = toggle.value;
     toggle.addEventListener('change', () => {
       fetch('/toggle', {
-        body: JSON.stringify({number: data[i]._id}),
+        body: JSON.stringify({ number: data[i]._id }),
         headers: { "Content-Type": "application/json;charset=utf-8", },
         method: 'POST',
       });
