@@ -7,7 +7,7 @@ async function init() {
   render();
 
 
-  document.querySelector('.addTodo').addEventListener('keypress', (e) => {
+  document.querySelector('.addTodo').addEventListener('keypress', async (e) => {
     const add = e.target.value;
     if (e.key === 'Enter' && add !== '') {
       fetch('/add', {
@@ -20,9 +20,13 @@ async function init() {
         },
         method: 'POST',
       });
-      data.push({ title: add, completed: false });
+      const res = await fetch("/get-todos");
+      const data_ = await res.json();
+      data = data_;
+      // data.push({ title: add, completed: false });
+      console.log(data);
       e.target.value = '';
-      init();
+      render();
     }
   });
 
@@ -42,6 +46,17 @@ async function init() {
     render();
   });
 
+  document.querySelector('.check-all').addEventListener('change', () => {
+    const check_all = data.filter((x) => x.completed).length === data.length;
+    fetch('/check-all', {
+      body: JSON.stringify({ check_all }),
+      headers: { "Content-Type": "application/json;charset=utf-8", },
+      method: 'POST',
+    });
+    check_all === false ? data.map((x) => x.completed = true) : data.map((x) => x.completed = false);
+    render();
+  });
+
   const setTodoFilter = document.querySelectorAll('.fil');
   for (const filter of setTodoFilter) {
     filter.addEventListener('change', () => {
@@ -54,9 +69,9 @@ async function init() {
   });
 }
 
-async function render() {
-  const filter = await document.querySelector('.fil:checked');
-  const str = await document.querySelector('.search').value;
+function render() {
+  const filter = document.querySelector('.fil:checked');
+  const str = document.querySelector('.search').value;
   const re = new RegExp(_.escapeRegExp(str), 'im');
   document.querySelector('.list').innerHTML = data
     .map((item, index) => ({
@@ -78,9 +93,23 @@ async function render() {
     })
     .join('');
 
+  if (data.filter((x) => x.completed).length === 0) {
+    document.querySelector('.buttonClear').style.visibility = 'hidden';
+  }
+  else {
+    document.querySelector('.buttonClear').style.visibility = 'visible';
+  }
+
   document.querySelector('.listTodo').innerHTML = '<div class="numTodo">' +
     data.filter((x) => !x.completed).length + ' дел осталось</div>';
 
+  const check_all = (data.filter((x) => x.completed).length === data.length) && data.length !== 0;
+  if (check_all) {
+    document.querySelector('.check-all').checked = true;
+  }
+  else {
+    document.querySelector('.check-all').checked = false;
+  }
 
   const removeTodo = document.querySelectorAll('.remove');
   for (let i = 0; i < removeTodo.length; i++) {

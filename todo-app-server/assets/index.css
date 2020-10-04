@@ -3,6 +3,8 @@ body {
   margin: auto;
   max-width: 38rem;
   padding: 2rem;
+  /* background-color: rgba(43, 42, 48); */
+  /* color: aliceblue; */
   background-color: rgb(250, 170, 50, 0.3);
 }
 

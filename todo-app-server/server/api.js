@@ -14,9 +14,10 @@ module.exports = function (app, db) {
     });
 
     app.post('/add', async (req, res) => {
-        await loadData(req.session.user._id);
+        const todos = await loadData(req.session.user._id);
         const list = req.body;
         await saveData(req.session.user._id, list.title, list.completed);
+        const todosList = await todos.find({userID: ObjectId(req.session.user._id)}).toArray();
         res.send('ok');
     });
 
@@ -25,6 +26,18 @@ module.exports = function (app, db) {
         const todoid = req.body;
         for (let i = 0; i < todoid.length; i++) {
             await data.deleteOne({_id: ObjectId(todoid[i])});
+        }
+        res.send('ok');
+    });
+
+    app.post('/check-all', async (req, res) => {
+        const todos = await loadData(req.session.user._id);
+        const check_all = req.body;
+        if(check_all.check_all){
+            await todos.updateMany({userID: ObjectId(req.session.user._id)}, {$set: {completed: false}});
+        }
+        else{
+            await todos.updateMany({userID: ObjectId(req.session.user._id)}, {$set: {completed: true}});
         }
         res.send('ok');
     });
